@@ -1,30 +1,31 @@
 import userData from '../fixtures/userData.json'
+import LoginPage from '../pages/loginPage.js'
+import DashboardPage from '../pages/dashboardPage.js'
+
+const loginPage = new LoginPage() 
+const dashboardPage = new DashboardPage()
 
 describe('Orange HRM Tests', () => {
 
   const selectorsList = {
-    usernameField: "[name='username']",
-    passwordField: "[name='password']",
-    loginButton: "[type='submit']",
-    sectionTitleTopBar: '.oxd-topbar-header-breadcrumb-module',
+
+    
     dashboardGrid: ".orangehrm-dashboard-grid",
-    wrongCredentialAlert: '.oxd-alert',
     myInfoButton: "[href='/web/index.php/pim/viewMyDetails']",
     firstNameField: "[name='firstName']",
     lastNameField: "[name='lastName']",
     genericField: ".oxd-input--active",
     dateField: "[placeholder='yyyy-dd-mm']",
     submitButton: "[type='submit']"
-    
+
   }
 
   it.only('User Info Update - Success', () => {
-    cy.visit('/auth/login')
-    cy.get(selectorsList.usernameField).type(userData.userSuccess.username)
-    cy.get(selectorsList.passwordField).type(userData.userSuccess.password)
-    cy.get(selectorsList.loginButton).click()
-    cy.location('pathname').should('equal', '/web/index.php/dashboard/index')
-    cy.get(selectorsList.dashboardGrid)
+    loginPage.accessLoginPage()
+    loginPage.loginWithUser(userData.userSuccess.username, userData.userSuccess.password)
+
+    dashboardPage.checkDashboardPage()
+
     cy.get(selectorsList.myInfoButton).click()
     cy.get(selectorsList.firstNameField).clear().type('FirstNameTest')
     cy.get(selectorsList.lastNameField).clear().type('LastNameTest')
@@ -33,7 +34,8 @@ describe('Orange HRM Tests', () => {
     cy.get(selectorsList.genericField).eq(6).clear().type('DriversLicenseTest')
     cy.get(selectorsList.genericField).eq(7).clear().type('2024-03-10')
     cy.get(selectorsList.submitButton).eq(0).click()
-    cy.get('body').should('contain', 'Se ha actualizado correctamente')    
+    cy.get('body').should('contain', 'Se ha actualizado correctamente') 
+    
   })
 
   it('Login - FAIL', () => {
